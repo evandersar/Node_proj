@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Portfolio DISPLAY</title>
+	<link rel="stylesheet" type="text/css" href="styles/main.css">
+	<!--<link rel="stylesheet" type="text/css" href="styles/bootstrap.min.css">
+	<script src="scripts/jquery-3.0.0.min.js" type="text/javascript"></script>-->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  	<script>
+  	window.onload = function(){
+
+  		var btn = document.getElementById("log_in"); 
+  		var authorized = false;
+
+		// отправка POST запроса 
+		function makeRequest() {
+
+			var username = document.getElementById("username").value;
+			var password = document.getElementById("password").value;
+
+			if (username && password){
+
+				var postReq = new XMLHttpRequest(); 
+				postReq.open('POST','/login'); 
+				postReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
+
+				var str1 = encodeURIComponent(username);
+				var str2 = encodeURIComponent(password);  
+				//console.log(str1);
+				//console.log(str2);
+				postReq.send(`text=${str1};${str2}`);
+
+				postReq.onload = function() {
+					if (this.responseText) {
+						alert('Wrong username or password!!!'); 
+					}else{
+						authorized = true;
+						console.log(authorized);
+						document.getElementById("username").value = '';
+						document.getElementById("password").value = '';
+						alert('Log in is SUCCESSFUL !');
+					}
+				};
+
+			} 
+		}
+
+		btn.onclick = makeRequest;
+
+		//PROJECT FILTER
+            $('#categories').on('click', function (e) {
+            	if (e.target.id) {
+	            	var category = e.target.id;
+	            	console.log(category);
+	            	var filt_images = document.getElementById('gallery');
+	                    $.ajax({
+	                        url: '/filter/' + category,
+	                        accept: 'application/json',
+	                        type: 'GET',
+	                        success: function (data) {
+	                        	//console.log(data);
+	                        	filt_images.innerHTML = data;
+	                            
+	                            //PORTFOLIO MASK
+								 $(".cover").mouseover(function (e) {
+								    e.target.previousElementSibling.style.visibility = 'visible';
+								 });
+								 $(".mask").mouseleave(function (e) {
+								    e.target.style.visibility = 'hidden';
+								 });
+	                        }
+	                    })
+                }
+            })
+
+  		//PORTFOLIO MASK
+		 $(".cover").mouseover(function (e) {
+		    e.target.previousElementSibling.style.visibility = 'visible';
+		 });
+		 $(".mask").mouseleave(function (e) {
+		    e.target.style.visibility = 'hidden';
+		 });
+
+		 //MASK HANDLER
+		 var mask = document.getElementsByClassName("mask");
+
+		 for (var i = 0; i < mask.length; i++) {
+		    mask[i].addEventListener('click', sendRequest, false);
+		}
+
+		 function sendRequest(e) {
+		 	console.log(e.target.tagName);
+		 	console.log(e.target.name);
+		 	if (e.target.tagName == 'IMG'){//&& authorized
+		 		var id = e.target.id;
+		 		var req_URL = '';
+		 		var req_type = '';
+		 		var loc_path = '';
+
+		 		console.log(id);
+
+		 		switch(e.target.name) {
+				  case 'del_prj':
+				  	req_URL = '/delete/';
+				  	req_type = 'DELETE';
+				  	loc_path = '/';
+				  	break
+
+				  case 'view_prj':
+				  	req_URL = '/view/';
+				  	req_type = 'GET';
+				  	loc_path = req_URL + id;
+				    break
+
+				  case 'edit_prj':
+				  	req_URL = '/edit/';
+				  	req_type = 'GET';
+				  	loc_path = req_URL + id;
+				    break
+				}
+
+				$.ajax({
+	                        url: req_URL + id,
+	                        accept: 'application/json',
+	                        type: req_type,
+	                        success: function () {
+                            	window.location.href = loc_path;
+                        	}
+	                    })
+		 	}
+		 }
+
+
+  	}
+  	</script>
+</head> 
+<body>
+	<div class="container-fluid">
+		
+		<div id="header" class="">
+			<div class="row grey services">
+				<div class="col-md-10 col-md-offset-1 col-xs-12">
+					<div class="col-md-7">
+						<h3><span id="logo">D</span><strong>DISPLAY</strong></h3>
+					</div>
+					<div class="col-md-5" style="margin-top: 20px;">
+						<span id="socials">
+							<i class="fa fa-twitter"></i>
+							<i class="fa fa-facebook"></i>
+							<i class="fa fa-rss"></i>
+							<i class="fa fa-pinterest-p"></i>
+							<i class="fa fa-google-plus"></i>
+							<i class="fa fa-dribbble"></i>
+						</span>
+					</div>
+					<div class="col-md-12">
+						<hr>
+						<a href="/home">HOME</a>
+						<a href="/contact">CONTACT</a>
+					</div>
+				</div>
+			</div>
+			<div class="row green">
+				<div class="col-md-12">
+					
+						    <div class="row cont">
+						    	<div class="col-md-5 col-md-offset-1 col-xs-12">
+						    		<label class="control-label"><h4>CHECK OUT OUR WORK</h4></label>
+						    	</div>
+						    	<div class="col-md-5 col-xs-12">
+						    		<input type="text" id="username" placeholder="Username">
+						        	<input type="password" id="password" placeholder="Password">
+						        	<button class="butt btn btn-primary" id="log_in">LOG IN</button>
+						    	</div>
+						    </div>
+					
+				</div>
+			</div>
+		</div>
+
+		<div id="portfolio">
+			<div class="row services" id="portf_menu">
+				<div class="col-md-10 col-md-offset-1 col-xs-12">
+					<div id="categories">
+						<a href="/home">ALL</a>
+						<a> / </a>
+						<a id="print">PRINT</a>
+						<a> / </a>
+						<a id="photography">PHOTOGRAPHY</a>
+						<a> / </a>
+						<a id="web">WEB</a>
+						<a> / </a>
+						<a id="applications">APPLICATIONS</a>
+					</div>
+					<div class="row services" id="gallery">
+						
+						<!--<div class="col-md-4 col-xs-6">
+							<div class="mask">
+								<div style="display: inline-block;">
+								<img src="images/pen.fw.png" class="circle">&nbsp&nbsp&nbsp
+								<img src="images/info.fw.png" class="circle"><br>
+								<span id="del"><img src="images/del.fw.png"></span>
+								</div>
+							</div>
+							<img src="images/001.jpg" class="img-responsive cover">
+						</div>
+
+						<div class="col-md-4 col-xs-6">
+							<img src="images/new.fw.png" class="img-responsive" id="add_prj">
+						</div>
+						-->
+						
+						<%- data %>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="footer">
+			<div class="row services" id="up_foot">
+				<div class="col-md-6 col-md-offset-1 col-xs-12">
+					<label class="control-label"><h4>ARE YOU IMPRESSED BY OUR CREATIVITY?</h4></label>
+				</div>
+				<div class="col-md-4 col-xs-12">
+					<a href="/contact"><button class="butt btn btn-primary" id="contact">CONTACT US RIGHT NOW</button></a>
+				</div>
+			</div>
+			<div class="row services" id="down_foot">
+				<div class="col-md-6 col-md-offset-1 col-xs-12">
+					<span>Copyright 2013 Display. All Rights Reserved.</span>
+				</div>
+				<div class="col-md-4 col-xs-12">
+					<a href="/home">HOME</a>
+					<span>/</span>
+					<a href="/contact">CONTACT</a>
+				</div>
+			</div>
+		</div>
+
+
+	</div>
+</body>
+</html>
